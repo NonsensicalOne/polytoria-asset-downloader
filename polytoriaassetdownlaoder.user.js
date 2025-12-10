@@ -5,7 +5,7 @@
 // @description  Download Polytoria Assets
 // @author       chinese temu workers
 // @match        *://*.polytoria.com/u/*
-// @license      WTFPL
+// @license      Unlicense
 // @grant        none
 // ==/UserScript==
 
