@@ -55,7 +55,7 @@
     try {
         const iframeSrc = document.querySelector("#user-avatar-card > div > div.position-relative > iframe").src;
         avatarData = JSON.parse(decodeURIComponent((atob(iframeSrc.substr(40)))));
-        console.log("Avatar Data:", avatarData);
+        //console.log("Avatar Data:", avatarData);
     } catch (e) {
         console.error("Error parsing avatar data", e);
         return;
