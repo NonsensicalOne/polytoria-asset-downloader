@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Polytoria Asset Downloader
 // @namespace    http://tampermonkey.net/
-// @version      0.67
+// @version      0.68
 // @description  Download Polytoria Assets
 // @author       chinese temu workers
 // @match        *://*.polytoria.com/u/*
@@ -62,7 +62,7 @@
     }
 
     const card = document.createElement("div");
-    card.className = "card mt-3 mb-3 shadow-sm mx-3";
+    card.className = "card-body mt-3 mb-3 shadow mx-3 pb-0 ps-0 pe-0";
 
     const cardHeader = document.createElement("div");
     cardHeader.className = "card-header font-weight-bold";
