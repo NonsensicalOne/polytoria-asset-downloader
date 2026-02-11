@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Polytoria Asset Downloader (for store, doesn't work for faces)
 // @namespace    http://tampermonkey.net/
-// @version      0.67
+// @version      0.69
 // @description  Download Polytoria Assets
-// @author       chinese temu workers
+// @author       chinese temu workers and AlfaCodeo
 // @match        *://*.polytoria.com/store/*
-// @license      Unlicense
+// @license      Unlicensed
 // @grant        none
 // ==/UserScript==
 
