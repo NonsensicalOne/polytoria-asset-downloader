@@ -97,7 +97,7 @@
         { key: 'head', label: 'Head Mesh' }
     ];
 
-    assetRow.appendChild(createButtonElement("Character", "https://cdn.polytoria.com/static/3dview/character.glb"));
+    assetRow.appendChild(createButtonElement("Character", "https://cdn.polytoria.com/static/character-v2-C2BfssXz.glb"));
 
     assets.forEach(asset => {
         if (avatarData[asset.key]) {
