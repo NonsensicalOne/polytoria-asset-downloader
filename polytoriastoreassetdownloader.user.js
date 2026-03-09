@@ -1,45 +1,113 @@
 // ==UserScript==
-// @name         Polytoria Asset Downloader (for store, doesn't work for faces)
+// @name         Polytoria Store Asset Downloader
 // @namespace    http://tampermonkey.net/
-// @version      0.67
-// @description  Download Polytoria Assets
-// @author       chinese temu workers
+// @version      0.69
+// @author       chinese temu workers and AlfaCodeo
+// @description  Streamlines the process of ripping textures from polytoria store.
 // @match        *://*.polytoria.com/store/*
-// @license      Unlicense
 // @grant        none
+// @run-at       document-start
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
-    const JSONdata = JSON.parse(decodeURIComponent(atob(document.querySelector("#canvas").dataset.options)));
-    //console.log(JSONdata);
+    let assetURL = null;
+    let buttonCreated = false;
 
-    const aElement = document.createElement('a');
-    aElement.target = "_blank";
-
-    const button = document.createElement('button');
-    button.className = 'btn btn-success';
-
-    const icon = document.createElement('i');
-    icon.className = 'fas fa-download me-1';
-
-    const buttonText = document.createTextNode(' Download this item');
-
-    button.appendChild(icon);
-    button.appendChild(buttonText);
-
-    if (JSONdata.shirt) {
-      aElement.href = JSONdata.shirt;
-    } else if (JSONdata.pants) {
-      aElement.href = JSONdata.pants;
-    } else if (JSONdata.items[0]) {
-      aElement.href = JSONdata.items[0];
-    } else {
-      return;
+    function findContainer() {
+        return (
+            document.querySelector(".d-grid.gap-2") ||
+            document.querySelector(".d-grid") ||
+            document.querySelector(".btn")?.parentElement
+        );
     }
 
-    aElement.appendChild(button);
+    function createButton(url) {
 
-    document.querySelector("#main-content > div:nth-child(3) > div.container.p-0.p-lg-5 > div.row.justify-content-center > div.col.col-md-9.col-lg-7.text-lg-end > div.row.justify-content-center.justify-content-lg-end > div > div.d-flex > div.flex-grow-1.d-grid.gap-2.mb-4.px-2.px-lg-0").appendChild(aElement);
+        if (buttonCreated) return;
+
+        const interval = setInterval(() => {
+
+            const container = findContainer();
+
+            if (!container) return;
+
+            const btn = document.createElement("a");
+
+            btn.href = url;
+            btn.target = "_blank";
+
+            btn.className = "btn btn-success";
+            btn.innerHTML = '<i class="fas fa-download me-1"></i> Download';
+
+            container.appendChild(btn);
+
+            buttonCreated = true;
+
+            clearInterval(interval);
+
+        }, 200);
+    }
+
+    function extract(text) {
+
+        if (assetURL) return;
+
+        const match = text.match(
+            /https:\/\/cdn\.polytoria\.com\/assets\/[A-Za-z0-9]+\.(png|jpg|webp)/
+        );
+
+        if (match) {
+
+            assetURL = match[0];
+
+            createButton(assetURL);
+        }
+    }
+
+    // Hook fetch early
+    const origFetch = window.fetch;
+
+    window.fetch = async function (...args) {
+
+        const res = await origFetch.apply(this, args);
+
+        res.clone().text().then(extract).catch(()=>{});
+
+        return res;
+    };
+
+    // Hook XHR early
+    const origOpen = XMLHttpRequest.prototype.open;
+
+    XMLHttpRequest.prototype.open = function (...args) {
+
+        this.addEventListener("load", function () {
+
+            if (this.responseText) extract(this.responseText);
+
+        });
+
+        return origOpen.apply(this, args);
+    };
+
+    // Also check already loaded resources
+    window.addEventListener("load", () => {
+
+        const entries = performance.getEntriesByType("resource");
+
+        for (const entry of entries) {
+
+            if (entry.name.includes("cdn.polytoria.com/assets/")) {
+
+                assetURL = entry.name;
+
+                createButton(assetURL);
+
+                break;
+            }
+        }
+    });
+
 })();
